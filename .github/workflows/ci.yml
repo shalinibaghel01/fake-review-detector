@@ -28,3 +28,5 @@ jobs:
           context: .
           push: true
           tags: shalinibaghel01/fake-review-app:latest
+
+# ✅ Triggered manually after adding secrets
