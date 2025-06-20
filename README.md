@@ -31,19 +31,35 @@ This project is a real-time **Fake Product Review Detector** built using **Pytho
 
 ---
 
-## 🏗️ Architecture Diagram
+## 📊 Visual Flow (Text Format)
+Local Repo
+   │
+   ▼
+GitHub ──▶ GitHub Actions ──▶ DockerHub
+                                   │
+                                   ▼
+                          Test EC2 Instance (Docker)
+                                   │
+                                   ▼
+                            Jenkins EC2 (CI/CD)
+                                   │
+                                   ▼
+                          Docker EC2 + Terraform
+                                   │
+                            ┌──────┴────────┐
+                            ▼               ▼
+                         EKS Cluster     Dev EC2 (Helm)
+                                             │
+                                             ▼
+                                  Helm Deploys App in EKS
+                                             │
+                                             ▼
+                                    External IP (Browser Access)
+                                             │
+                                             ▼
+                            Prometheus + Grafana via Helm (Monitoring)
 
-```mermaid
-graph TD
-A[Developer] --> B[GitHub Repo]
-B --> C[GitHub Actions CI]
-C --> D[DockerHub]
-D --> E[Jenkins Server - EC2]
-E --> F[Terraform - Create Infra]
-F --> G[EKS Cluster (Kubernetes)]
-G --> H[Helm Chart - App Deployment]
-H --> I[Flask App in Container]
-I --> J[Prometheus + Grafana - Monitoring]
+
 
 🔁 CI/CD Pipeline Workflow
 
