@@ -1,0 +1,198 @@
+# 🧪 Commands Used – Fake Product Review Detector Project
+
+This document contains **tool-wise CLI commands** used throughout the DevOps lifecycle of this project, in the **same order** as mentioned in the main README.
+
+---
+
+## 1️⃣ GitHub (Code Management)
+
+```bash
+# Initialize repo
+git init
+
+# Add files to staging
+git add .
+
+# Commit changes
+git commit -m "Initial commit"
+
+# Add GitHub remote
+git remote add origin https://github.com/username/fake-review-detector.git
+
+# Push to GitHub
+git push -u origin main
+
+##2️⃣ GitHub Actions (CI/CD Pipeline - Docker Build & Push)
+Note: GitHub Actions .yml file executes these commands internally.
+
+bash
+Copy
+Edit
+# Login to DockerHub (set via GitHub secrets)
+echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+# Build Docker image
+docker build -t fake-review-app:latest .
+
+# Tag image for DockerHub
+docker tag fake-review-app:latest dockerhub_username/fake-review-app:latest
+
+# Push image to DockerHub
+docker push dockerhub_username/fake-review-app:latest
+
+##3️⃣ Docker (Run Application Locally or on Server)
+
+bash
+Copy
+Edit
+# Pull image from DockerHub
+docker pull dockerhub_username/fake-review-app:latest
+
+# Run Flask app in container
+docker run -d -p 5000:5000 --name fake-review-app dockerhub_username/fake-review-app:latest
+
+# Check running containers
+docker ps
+
+# Stop container
+docker stop fake-review-app
+
+# Remove container
+docker rm fake-review-app
+
+##4️⃣ Jenkins (CI/CD Pipeline Automation)
+These are used on Jenkins EC2 server
+
+bash
+Copy
+Edit
+# Install Jenkins (on Ubuntu EC2)
+sudo apt update
+sudo apt install openjdk-11-jdk -y
+wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+sudo sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+sudo apt update
+sudo apt install jenkins -y
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+
+# Check Jenkins status
+sudo systemctl status jenkins
+
+# Unlock Jenkins (initial admin password)
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+# Install required Jenkins plugins (Docker, Git, BlueOcean, etc.)
+
+# Typical Jenkinsfile stage commands (executed inside pipeline)
+git clone https://github.com/username/fake-review-detector.git
+docker build -t dockerhub_username/fake-review-app:latest .
+docker push dockerhub_username/fake-review-app:latest
+
+##5️⃣ Terraform (Infra Creation - EKS, EC2, VPC)
+
+bash
+Copy
+Edit
+# Move into Terraform directory
+cd terraform/
+
+# Initialize Terraform
+terraform init
+
+# Validate configuration
+terraform validate
+
+# Preview changes
+terraform plan
+
+# Apply infrastructure
+terraform apply -auto-approve
+
+# Destroy infrastructure (if needed)
+terraform destroy -auto-approve
+
+##6️⃣ Helm (Kubernetes Deployment)
+bash
+Copy
+Edit
+# Move into helm directory
+cd helm-chart/
+
+# Create Helm chart (initial setup only)
+helm create fake-review
+
+# Install app using Helm
+helm install fake-review ./ --namespace default
+
+# Upgrade release after changes
+helm upgrade fake-review ./ --namespace default
+
+# List all Helm releases
+helm list
+
+# Uninstall release (if needed)
+helm uninstall fake-review
+
+##7️⃣ AWS EKS (Kubernetes Cluster)
+
+bash
+Copy
+Edit
+# Configure kubectl for EKS
+aws eks --region ap-south-1 update-kubeconfig --name fake-review-cluster
+
+# Verify context
+kubectl config current-context
+
+# View nodes
+kubectl get nodes
+
+# View pods
+kubectl get pods
+
+# View services
+kubectl get svc
+
+# Describe pod for debugging
+kubectl describe pod <pod-name>
+
+# Check logs
+kubectl logs <pod-name>
+
+##8️⃣ Prometheus + Grafana (Monitoring)
+Installed via Helm on DevOps EC2 Server
+
+bash
+Copy
+Edit
+# Add Helm repo for Prometheus
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+# Install Prometheus
+helm install prometheus prometheus-community/prometheus
+
+# Install Grafana
+helm install grafana prometheus-community/grafana
+
+# Get Grafana admin password
+kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode
+
+# Port-forward Grafana (for dashboard access)
+kubectl port-forward svc/grafana 3000:80
+💡 Optional: Docker Image Cleanup Commands
+bash
+Copy
+Edit
+# List all Docker images
+docker images
+
+# Remove unused images
+docker image prune -a
+
+
+✅ Notes
+All secrets (DockerHub creds, GitHub tokens) are securely passed via Jenkins credentials or GitHub Actions secrets.
+
+Kubernetes config is managed using ~/.kube/config from Terraform-generated outputs or aws eks update-kubeconfig.

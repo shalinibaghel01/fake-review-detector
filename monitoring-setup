@@ -1,0 +1,83 @@
+# 📈 Monitoring Setup: Prometheus + Grafana on AWS EKS
+
+This document explains how Prometheus and Grafana were deployed to monitor the Fake Product Review Detector app on AWS EKS.
+
+---
+
+## 🛠️ Tools Used
+
+- **Prometheus:** Metrics collection
+- **Grafana:** Dashboard & visualization
+- **Helm Chart:** Official kube-prometheus-stack from Prometheus Community
+- **Namespace:** default
+- **Cluster:** AWS EKS (created via Terraform)
+
+---
+
+## 🚀 Deployment Steps (Without values.yaml)
+
+### 1. Add Helm Repo
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+### 2. Install Prometheus + Grafana Stack
+
+```bash
+helm install monitoring prometheus-community/kube-prometheus-stack
+
+### 3. Get Grafana Admin Password
+
+```bash
+kubectl get secret monitoring-grafana -o jsonpath="{.data.admin-password}" | base64 --decode
+
+### 4. Get External IP of Grafana
+
+```bash
+kubectl get svc -n default
+Look for a service like monitoring-grafana and copy the EXTERNAL-IP.
+
+
+🌐 Access Grafana Dashboard
+Open browser: http://<EXTERNAL-IP>:80
+
+Username: admin
+
+Password: (from secret above)
+
+
+📊 Add Prometheus Data Source
+Go to Settings > Data Sources
+
+Click Add data source
+
+Choose Prometheus
+
+URL: http://prometheus-operated:9090
+
+Click Save & Test
+
+
+📡 Enable EKS Monitoring Dashboard
+Go to + > Import
+
+Enter Dashboard ID: 1860
+
+Choose Prometheus as data source
+
+Click Import
+
+
+✅ Notes
+No custom values.yaml was used in this setup.
+
+Default chart values were sufficient for this project’s needs.
+
+For production use, it's recommended to customize retention, alerting, and dashboards via a values.yaml file.
+
+📎 Resources
+kube-prometheus-stack Helm Chart
+
+Grafana Dashboards
+

@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
+    }
+
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git url: 'https://github.com/shalinibaghel/fake-review-detector.git', branch: 'main', credentialsId: 'github-creds'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t shalinibaghel01/fake-review-flask:latest .'
+            }
+        }
+
+        stage('Login to DockerHub') {
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+
+        stage('Push to DockerHub') {
+            steps {
+                sh 'docker push shalinibaghel01/fake-review-flask:latest'
+            }
+        }
+    }
+}
